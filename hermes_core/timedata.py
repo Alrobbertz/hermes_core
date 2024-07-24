@@ -17,8 +17,8 @@ class HermesData(SWXData):
 
     Parameters
     ----------
-    timeseries :  `astropy.timeseries.TimeSeries`
-        The time series of data. Columns must be `~astropy.units.Quantity` arrays.
+    timeseries :  `Union[astropy.timeseries.TimeSeries, Dict[str, astropy.timeseries.TimeSeries]]`
+        The time-series data. This can be a single `astropy.timeseries.TimeSeries` object or a dictionary of `str` to `astropy.timeseries.TimeSeries` objects. If a dictionary, one key must be named 'epoch', the primary time axis. If non-index/time columns are included in any of the TimeSeries objects, they must be `~astropy.units.Quantity` arrays.
     support : `Optional[dict[Union[astropy.units.Quantity, astropy.nddata.NDData]]]`
         Support data arrays which do not vary with time (i.e. Non-Record-Varying data).
     spectra : `Optional[ndcube.NDCollection]`
@@ -55,7 +55,7 @@ class HermesData(SWXData):
     ... )
     >>> # Create a Support Structure
     >>> support_data = {
-    ...     "data_mask": NDData(data=np.eye(100, 100, dtype=np.uint16))
+    ...     "data_mask": NDData(data=np.eye(100, 100, dtype=np.uint16), meta={"CATDESC": "Data Mask", "VAR_TYPE": "metadata"})
     ... }
     >>> # Create Global Metadata Attributes
     >>> input_attrs = HermesData.global_attribute_template("eea", "l1", "1.0.0")
@@ -82,7 +82,9 @@ class HermesData(SWXData):
 
     def __init__(
         self,
-        timeseries: astropy.timeseries.TimeSeries,
+        timeseries: Union[
+            astropy.timeseries.TimeSeries, dict[str, astropy.timeseries.TimeSeries]
+        ],
         support: Optional[
             dict[Union[astropy.units.Quantity, astropy.nddata.NDData]]
         ] = None,
